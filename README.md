@@ -1,29 +1,30 @@
-gull
+Gull
 ====
 
 <https://github.com/jeremybanks/gull>
 
-A lisp-ish language that compiles to Python, PHP or JavaScript.
-
-The first compiler is being written in Python. I intend to have one in each output language, with a lot of common code written in gull itself.
-
-The language values efficient portability over power.
-
-The standard library will be macros mapping to different functions/constructs in different languages.
-
-But this makes them not fist-class... hmm. Have some way to compile it so that when you just attempt to execute the function directly, it uses the built-in, but if you attempt to use it as a value, it wraps it in a function variable?
-
-Maybe this requires a multi-step parsing thing?
-
-In PHP 5.3+, by compiling all functions as classes with `__invoke` and replacing instances of the functions being defined with instances of this class being compiled with all of its closures added as properties...
-
-This could be done somehow. Maybe, in macros, all values have an "evaluate" method. `(foo bar bar)` is treated like `foo(bar.evaluate(), bar.evaluate())`. For most things this would return `self`, but in PHP it could be used to create a value from a built-in function.
+Gull will be a Lisp-style language with compilers in and compiling to Python 2.5+, PHP 5.3+ and ECMAScript 3+. The Python compiler and PHP target are being developed first.
 
 Syntax
 ------
 
-Like S-expressions, but with `[]` and `{}` added. These just map as `[1 2]` to `(__bracket 1 2)`, `{1: 2, 3: 4}` to `(__brace 1 2 3 4)`. `,` and `:` are whitespace.
+The syntax tree is entirely s-expressions, but various sugars are available.
 
-Function definitions with splats!
+- List and map literals: `[1 2 3]`, `{"foo": 4, "bar": 6}`
+- List and map lookup: `x[1]`, `bar["foo"]`
+- Splats: `(fn [first rest...] (first rest...))`
+- Attributes/methods: `(foo.bar foo.bat)`
+- "` \t\n\r:,`" are whitespace.
+- Any otherwise unused characters can be used as identifiers.
 
-In PHP they compile to `func_get_args()`, `array_slice()`d as necessary.
+Macros
+------
+
+The macro system will be good. Probably more powerful than Lisp's, in order to handle the multiple target languages effectively.
+
+Components
+----------
+
+- Interpreter for Gull, in each target language: parses and executes Gull code; Implements the language core in the target language.
+- Standard Library in Gull: macros and functions building on those provided by the interpreter core.
+- Compiler, for each target language, in Gull: macros and functions to convert Gull code to the target language.
